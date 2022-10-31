@@ -1,0 +1,342 @@
+* Notes
+I used these commands to set this lab up:
+#+begin_src bash
+bundle install
+npm install --prefix client
+#+end_src
+
+I then ran the backend server with the 'rails s' server command within a separate terminal which ran on Port 3000.
+
+I then ran the frontend with the following command on Port 4000:
+#+begin_src bash
+npm start --prefix client
+#+end_src
+
+I then had to run the command to install a newer version of the 'browserslist' dependency:
+#+begin_src bash
+npx browserslist@latest --update-db
+#+end_src
+
+I then kept receiving this error:
+#+begin_src bash
+Starting the development server...
+
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:71:19)
+    at Object.createHash (node:crypto:133:10)
+    at module.exports (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/util/createHash.js:135:53)
+    at NormalModule._initBuildHash (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:417:16)
+    at handleParseError (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:471:10)
+    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:503:5
+    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:358:12    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/loader-runner/lib/LoaderRunner.js:373:3
+    at iterateNormalLoaders (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/loader-runner/lib/LoaderRunner.js:214:10)
+    at iterateNormalLoaders (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/loader-runner/lib/LoaderRunner.js:221:10)
+Browserslist: caniuse-lite is outdated. Please run:
+npx browserslist@latest --update-db
+
+Why you should do it regularly:
+https://github.com/browserslist/browserslist#browsers-data-updating
+/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/react-scripts/scripts/start.js:19
+  throw err;
+  ^
+
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:71:19)
+    at Object.createHash (node:crypto:133:10)
+    at module.exports (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/util/createHash.js:135:53)
+    at NormalModule._initBuildHash (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:417:16)
+    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:452:10    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/webpack/lib/NormalModule.js:323:13    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/loader-runner/lib/LoaderRunner.js:367:11
+    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/loader-runner/lib/LoaderRunner.js:233:18
+    at context.callback (/Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/loader-runner/lib/LoaderRunner.js:111:13)
+    at /Users/samuelbanya/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun/client/node_modules/babel-loader/lib/index.js:59:103 {  opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ],
+  library: 'digital envelope routines',
+  reason: 'unsupported',
+  code: 'ERR_OSSL_EVP_UNSUPPORTED'
+}
+
+Node.js v18.12.0
+#+end_src
+
+I then did research and found this StackOverflow post:
+- https://stackoverflow.com/questions/71033802/error-error0308010cdigital-envelope-routinesunsupported-next-js
+
+I then did the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ npm install cross-env
+
+added 7 packages, and audited 19 packages in 1s
+
+1 high severity vulnerability
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+#+end_src
+
+<2022-10-31 Mon 17:48>: Since the project just wouldn't run, I don't care enough to debug this stupid stuff, since it should be working from the get-go. Why don't the instructors ensure their projects work is beyond me, but I'll just continue anyway.
+
+<2022-10-31 Mon 17:52>: I used the following commands to generate the associated models accordingly:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g model camper --no-test-framework
+      invoke  active_record
+      create    db/migrate/20221031225238_create_campers.rb
+      create    app/models/camper.rb
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g model activity --no-test-framework
+      invoke  active_record
+      create    db/migrate/20221031225248_create_activities.rb
+      create    app/models/activity.rb
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g model signup --no-test-framework
+      invoke  active_record
+      create    db/migrate/20221031225255_create_signups.rb
+      create    app/models/signup.rb
+#+end_src
+
+I then updated the 'app/models/activity.rb' Activity model with the following contents:
+#+begin_src ruby
+class Activity < ApplicationRecord
+    has_many :signups, dependent: :destroy
+    has_many :campers, through: :signups
+end
+#+end_src
+
+I then updated the 'app/models/camper.rb' Camper model with the following contents:
+#+begin_src ruby
+class Camper < ApplicationRecord
+    has_many :signups
+    has_many :activities, through: :signups
+
+    validates :name, presence: true
+    validates :age, inclusion: 8..18
+end
+#+end_src
+
+I then updated the 'app/models/signup.rb' Signup model with the following contents:
+#+begin_src ruby
+class Signup < ApplicationRecord
+    belongs_to :camper
+    belongs_to :activity
+    validates :time, inclusion: 0..23
+end
+#+end_src
+
+I then generated the associated 'ActivitiesController' with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g controller activities --no-test-framework
+      create  app/controllers/activities_controller.rb
+#+end_src
+
+I then placed the following within the 'app/controllers/activities_controller.rb' Activities Controller file:
+#+begin_src ruby
+class ActivitiesController < ApplicationController
+    rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+
+    def index
+        render json: Activity.all()
+    end
+
+    def destroy
+        activity = find_activity
+        activity.destroy()
+        head :no_content
+    end
+
+    def find_activity
+        Activity.find(params[:id])
+    end
+
+    def render_not_found_response
+        render json: { error: "Activity not found" }, status: :not_found
+    end
+
+end
+#+end_src
+
+I then created the 'Campers' controller with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g controller campers --no-test-framework
+      create  app/controllers/campers_controller.rb
+#+end_src
+
+I then placed the following within the contents of the 'app/controllers/campers_controller.rb' file:
+#+begin_src ruby
+class CampersController < ApplicationController
+    rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+    rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
+
+    def index
+        render json: Camper.all()
+    end
+
+    def show
+        camper = find_camper
+        render json: camper, serializer: CamperWithActivitiesSerializer
+    end
+
+    def create
+        camper = Camper.create!(camper_params)
+        render json: camper, status: :created
+    end
+
+    def camper_params
+        params.permit(:name, :age)
+    end
+
+    def find_camper
+        Camper.find(params[:id])
+    end
+
+    def render_not_found_response
+        render json: { error: "Camper not found" }, status: :not_found
+    end
+
+    def render_unprocessable_entity_response(exception)
+        render json: { errors: exception.record.errors.full_messages }, status: :unprocessable_entity
+    end
+end
+#+end_src
+
+I then created the 'Signups' controller with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g controller signups --no-test-framework
+      create  app/controllers/signups_controller.rb
+#+end_src
+
+I then modified the 'app/controllers/signups_controller.rb' Signups Controller file with the following contents:
+#+begin_src ruby
+class SignupsController < ApplicationController
+    rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
+
+    def create
+        signup = Signup.create!(signup_params)
+        render json: signup.activity, status: :created
+    end
+
+    private
+
+    def signup_params
+        params.permit(:camper_id, :activity_id, :time)
+    end
+
+    def render_unprocessable_entity_response(exception)
+        render json: { errors: exception.record.errors.full_messages }, status: :unprocessable_entity
+    end
+end
+#+end_src
+
+I then generated the 'Activity' Serializer with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g serializer activity --no-test-framework
+      create  app/serializers/activity_serializer.rb
+#+end_src
+
+I then modified the 'app/serializers/activity_serializer.rb' Activity Serializer with the following contents:
+#+begin_src ruby
+class ActivitySerializer < ActiveModel::Serializer
+  attributes :id, :name, :difficulty
+end
+#+end_src
+
+I then generated the 'Camper' Serializer with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g serializer camper --no-test-framework
+      create  app/serializers/camper_serializer.rb
+#+end_src
+
+I then modified the 'app/serializers/camper_serializer.rb' Camper Serializer with the following contents:
+#+begin_src ruby
+class CamperSerializer < ActiveModel::Serializer
+  attributes :id, :name, :age
+end
+#+end_src
+
+I then created the 'CamperWithActivities' serializer with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g serializer camper_with_activities --no-test-framework
+      create  app/serializers/camper_with_activities_serializer.rb
+#+end_src
+
+I then modified the 'app/serializers/camper_with_activities_serializer.rb' Camper With Activities Serializer with the following contents:
+#+begin_src ruby
+class CamperWithActivitiesSerializer < ActiveModel::Serializer
+  attributes :id, :name, :age
+  has_many :activities
+end
+#+end_src
+
+I then created the 'SignupSerializer' serializer with the following command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails g serializer signup --no-test-framework
+      create  app/serializers/signup_serializer.rb
+#+end_src
+
+I then modified the contents of the 'app/serializers/signup_serializer.rb' SignupSerializer with the following contents:
+#+begin_src ruby
+class SignupSerializer < ActiveModel::Serializer
+  attributes :id, :difficulty
+  has_one :camper
+  has_one :activity
+end
+#+end_src
+
+I then modified the 'config/routes.rb' routes file with the following contents:
+#+begin_src ruby
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :signups, only: :create
+  resources :activities, only: [:index, :destroy]
+  resources :campers, only: [:index, :show, :create]
+end
+#+end_src
+
+I then modified the contents of the existing migration in the '20221031225238_create_campers.rb' file with the following:
+#+begin_src ruby
+class CreateCampers < ActiveRecord::Migration[6.1]
+  def change
+    create_table :campers do |t|
+      t.string :name
+      t.integer :age
+
+      t.timestamps
+    end
+  end
+end
+#+end_src
+
+I then modified the contents of the '20221031225248_create_activities.rb' Create Activities migration file with the following:
+#+begin_src ruby
+class CreateActivities < ActiveRecord::Migration[6.1]
+  def change
+    create_table :activities do |t|
+      t.string :name
+      t.integer :difficulty
+
+      t.timestamps
+    end
+  end
+end
+#+end_src
+
+I then modified the contents of the '20221031225255_create_signups.rb' CreateSignups migration with the following contents:
+#+begin_src ruby
+class CreateSignups < ActiveRecord::Migration[6.1]
+  def change
+    create_table :signups do |t|
+      t.belongs_to :camper, null: false, foreign_key: true
+      t.belongs_to :activity, null: false, foreign_key: true
+      t.integer :time
+
+      t.timestamps
+    end
+  end
+end
+#+end_src
+
+I then ran the following commands accordingly:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-mock-challenge-camping-fun $ rails db:migrate db:seed
+🏕 Seeding campers...
+🏕 Seeding activities...
+🏕 Seeding signups...
+✅ Done seeding!
+#+end_src
